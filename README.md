@@ -22,10 +22,15 @@ pip install -r requirements.txt
 
 ## Running the App
 
-1. Start the Flask server (it listens on port 5001):
+1. Start the Flask server. By default it listens on port 5001, but you can
+   override the port by setting the `PORT` environment variable:
 
 ```bash
+# run on the default port (5001)
 python src/app.py
+
+# or specify a custom port
+PORT=8000 python src/app.py
 ```
 
 2. Open `static/index.html` in a browser.
