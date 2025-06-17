@@ -36,4 +36,4 @@ def census():
     return jsonify({'tract': tract, 'population': data[1][0], 'year': year})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5001)

@@ -22,7 +22,7 @@ pip install -r requirements.txt
 
 ## Running the App
 
-1. Start the Flask server:
+1. Start the Flask server (it listens on port 5001):
 
 ```bash
 python src/app.py
