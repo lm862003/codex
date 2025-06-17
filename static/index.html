@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>TimeScope</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    #map { height: 100vh; }
+  </style>
+</head>
+<body>
+<div id="map"></div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  const map = L.map('map').setView([38.5816, -121.4944], 12); // Sacramento by default
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
+  function fetchCensus(lat, lon) {
+    fetch(`/census?lat=${lat}&lon=${lon}&year=2010`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.error) alert(data.error);
+        else L.popup().setLatLng([lat, lon]).setContent(`Population 2010: ${data.population}`).openOn(map);
+      })
+      .catch(err => console.error(err));
+  }
+
+  map.on('click', e => {
+    fetchCensus(e.latlng.lat, e.latlng.lng);
+  });
+</script>
+</body>
+</html>
