@@ -26,7 +26,17 @@ npm install
 npm run dev
 ```
 
-The frontend will be served at `http://localhost:5173`.
+The dev server requires Node.js (version 18 or newer). Once `npm run dev` is running
+you should see output similar to:
+
+```
+  VITE v5.0.0  ready in xx ms
+  ➜  Local:   http://localhost:5173/
+```
+
+Open the printed URL (usually `http://localhost:5173/`) in your browser. If the site
+cannot be reached, double check that the dev server is still running in your
+terminal and that no firewall rules block the port.
 
 ## Directory Structure
 
