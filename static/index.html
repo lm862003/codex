@@ -22,8 +22,17 @@
     fetch(`/census?lat=${lat}&lon=${lon}&year=2010`)
       .then(r => r.json())
       .then(data => {
-        if (data.error) alert(data.error);
-        else L.popup().setLatLng([lat, lon]).setContent(`Population 2010: ${data.population}`).openOn(map);
+        if (data.error) {
+          L.popup()
+            .setLatLng([lat, lon])
+            .setContent(data.error)
+            .openOn(map);
+        } else {
+          L.popup()
+            .setLatLng([lat, lon])
+            .setContent(`Population 2010: ${data.population}`)
+            .openOn(map);
+        }
       })
       .catch(err => console.error(err));
   }
@@ -31,6 +40,17 @@
   map.on('click', e => {
     fetchCensus(e.latlng.lat, e.latlng.lng);
   });
+
+  // Display sample locations that are known to return data
+  fetch('/static/sample_points.json')
+    .then(r => r.json())
+    .then(points => {
+      points.forEach(p => {
+        const marker = L.marker([p.lat, p.lon]).addTo(map);
+        marker.bindPopup(p.name);
+      });
+    })
+    .catch(err => console.error(err));
 </script>
 </body>
 </html>
