@@ -18,15 +18,16 @@ The API will be available on `http://localhost:8000`.
 
 ## Frontend
 
-The frontend is a React app bootstrapped with Vite. Install dependencies and start the dev server:
+The frontend is a React app bootstrapped with Vite. Install dependencies and
+start the dev server from the repository root:
 
 ```bash
-cd frontend
 npm install
 npm run dev
 ```
 
-The frontend will be served at `http://localhost:5173`.
+Vite will serve files from `http://localhost:5173/` using the configuration in
+`vite.config.js`.
 
 ## Directory Structure
 
