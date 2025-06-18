@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 import os
 import requests
+import sqlite3
 
 # Serve static files from the repository-level "static" directory so
 # users can access index.html via the Flask server.
@@ -12,14 +13,45 @@ app = Flask(
 
 CENSUS_API_URL = "https://api.census.gov/data"  # base URL
 
+# SQLite database for caching API responses
+DB_PATH = os.path.join(os.path.dirname(__file__), '..', 'cache.db')
+
+# Ensure the cache table exists
+with sqlite3.connect(DB_PATH) as conn:
+    conn.execute(
+        """CREATE TABLE IF NOT EXISTS census_cache (
+                lat REAL,
+                lon REAL,
+                year TEXT,
+                tract TEXT,
+                population TEXT,
+                PRIMARY KEY (lat, lon, year)
+            )"""
+    )
+    conn.commit()
+
 @app.route('/census')
 def census():
     """Query the Census API by latitude/longitude and year."""
-    lat = request.args.get('lat')
-    lon = request.args.get('lon')
+    lat_param = request.args.get('lat')
+    lon_param = request.args.get('lon')
     year = request.args.get('year', '2010')
-    if not lat or not lon:
+    if not lat_param or not lon_param:
         return jsonify({'error': 'lat and lon are required'}), 400
+
+    # Round coordinates for cache lookup
+    lat = round(float(lat_param), 4)
+    lon = round(float(lon_param), 4)
+
+    # Check cache first
+    with sqlite3.connect(DB_PATH) as conn:
+        cur = conn.execute(
+            'SELECT tract, population FROM census_cache WHERE lat=? AND lon=? AND year=?',
+            (lat, lon, year)
+        )
+        row = cur.fetchone()
+        if row:
+            return jsonify({'tract': row[0], 'population': row[1], 'year': year, 'cached': True})
 
     # Example: call the Census geocoder to get the census tract
     geocoder_url = f"https://geocoding.geo.census.gov/geocoder/geographies/coordinates?x={lon}&y={lat}&benchmark=Public_AR_Census2020&vintage={year}&format=json"
@@ -40,7 +72,17 @@ def census():
         return jsonify({'error': 'Failed to fetch census data'}), 500
 
     data = census_resp.json()
-    return jsonify({'tract': tract, 'population': data[1][0], 'year': year})
+    population = data[1][0]
+
+    # Store in cache
+    with sqlite3.connect(DB_PATH) as conn:
+        conn.execute(
+            'INSERT OR REPLACE INTO census_cache (lat, lon, year, tract, population) VALUES (?,?,?,?,?)',
+            (lat, lon, year, tract, population)
+        )
+        conn.commit()
+
+    return jsonify({'tract': tract, 'population': population, 'year': year, 'cached': False})
 
 
 # Serve the main map interface via Flask so users can simply visit

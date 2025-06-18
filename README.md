@@ -7,6 +7,7 @@ This repository contains a minimal prototype for **TimeScope**, a map-based web 
 - Click anywhere on the map to query the Census Bureau geocoder and retrieve the census tract.
 - Fetch population data from the decennial census (default year 2010).
 - Display the population in a pop-up on the map.
+- Responses are cached locally to minimize Census API calls.
 
 ## Requirements
 
@@ -37,5 +38,9 @@ PORT=8000 python src/app.py
    the map interface.
 
 Click on the map to fetch population data for the selected location.
+
+The application creates a `cache.db` SQLite database in the project
+directory to store query results. You can delete this file at any time to
+clear the cache.
 
 This is only a starting point. You can extend it with additional endpoints for other years, overlay more datasets, and build a richer frontend.
