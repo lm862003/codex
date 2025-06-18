@@ -33,7 +33,8 @@ python src/app.py
 PORT=8000 python src/app.py
 ```
 
-2. Open `static/index.html` in a browser.
+2. Visit `http://localhost:5001/` (or your chosen port) in a browser to view
+   the map interface.
 
 Click on the map to fetch population data for the selected location.
 

@@ -1,7 +1,14 @@
 from flask import Flask, request, jsonify
+import os
 import requests
 
-app = Flask(__name__)
+# Serve static files from the repository-level "static" directory so
+# users can access index.html via the Flask server.
+app = Flask(
+    __name__,
+    static_folder=os.path.join(os.path.dirname(__file__), '..', 'static'),
+    static_url_path='/static'
+)
 
 CENSUS_API_URL = "https://api.census.gov/data"  # base URL
 
@@ -34,6 +41,13 @@ def census():
 
     data = census_resp.json()
     return jsonify({'tract': tract, 'population': data[1][0], 'year': year})
+
+
+# Serve the main map interface via Flask so users can simply visit
+# the root URL in a browser instead of opening the HTML file manually.
+@app.route('/')
+def index():
+    return app.send_static_file('index.html')
 
 if __name__ == '__main__':
     import os
