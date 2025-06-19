@@ -1,50 +1,57 @@
-# TimeScope Prototype
+# SpotMap Prototype
 
-This repository contains a minimal prototype for **TimeScope**, a map-based web application that lets users explore historical U.S. Census data through an interactive map. It combines OpenStreetMap tiles with the U.S. Census Bureau API.
+This repository contains a local-first prototype with a Python backend and a React frontend.
 
-## Features
+## Backend
 
-- Click anywhere on the map to query the Census Bureau geocoder and retrieve the census tract.
-- Fetch population data from the decennial census. The server currently knows
-  how to query the 2010 and 2020 decennial datasets and chooses the correct API
-  parameters automatically based on the requested year (the map uses 2010).
-- Display the population in a pop-up on the map.
-- Responses are cached locally to minimize Census API calls.
+The backend uses FastAPI with a SQLite database. Posts and uploaded photos are stored locally.
 
-## Requirements
-
-- Python 3.8+
-- Flask
-- requests
-
-Install dependencies with:
+Run the backend:
 
 ```bash
+python -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
+python main.py
 ```
 
-## Running the App
+The requirements install `fastapi`, `uvicorn`, and `python-multipart`. The last
+package is required for handling form uploads.
 
-1. Start the Flask server. By default it listens on port 5001, but you can
-   override the port by setting the `PORT` environment variable:
+The API will be available on `http://localhost:8000`.
+
+## Frontend
+
+The frontend is a React app bootstrapped with Vite. Install dependencies and start the dev server:
 
 ```bash
-# run on the default port (5001)
-python src/app.py
-
-# or specify a custom port
-PORT=8000 python src/app.py
+cd frontend
+npm install
+npm run dev
 ```
 
-2. Visit `http://localhost:5001/` (or your chosen port) in a browser to view
-   the map interface.
+The dev server requires Node.js (version 18 or newer). Once `npm run dev` is running
+you should see output similar to:
 
-Click on the map to fetch population data for the selected location. A few
-sample points are loaded automatically so you can verify the API connection even
-if random clicks fail to resolve to a census tract.
+```
+  VITE v5.0.0  ready in xx ms
+  ➜  Local:   http://localhost:5173/
+```
 
-The application creates a `cache.db` SQLite database in the project
-directory to store query results. You can delete this file at any time to
-clear the cache.
+Open the printed URL (usually `http://localhost:5173/`) in your browser. If the site
+cannot be reached, double check that the dev server is still running in your
+terminal and that no firewall rules block the port.
 
-This is only a starting point. You can extend it with additional endpoints for other years, overlay more datasets, and build a richer frontend.
+## Directory Structure
+
+```
+backend/
+    app.py
+    schema.sql
+    uploads/
+    data/
+frontend/
+    public/
+        icons/
+    src/
+        components/
+```
