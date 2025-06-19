@@ -54,3 +54,13 @@ frontend/
     src/
         components/
 ```
+
+## Running Tests
+
+Install the development dependencies and run `pytest`:
+
+```bash
+python -m venv venv && source venv/bin/activate
+pip install -r requirements.txt -r requirements-dev.txt
+pytest
+```
