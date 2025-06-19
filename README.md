@@ -16,6 +16,9 @@ python main.py
 
 The API will be available on `http://localhost:8000`.
 
+Cross-origin requests from `http://localhost:5173` are allowed by default so
+the frontend dev server can communicate with the API.
+
 ## Frontend
 
 The frontend is a React app bootstrapped with Vite. Install dependencies and start the dev server:
