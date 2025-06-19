@@ -2,6 +2,7 @@ from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.responses import FileResponse
 import sqlite3
 from pathlib import Path
+from uuid import uuid4
 
 DB_PATH = Path(__file__).parent / "db.sqlite3"
 UPLOAD_DIR = Path(__file__).parent / "uploads"
@@ -35,7 +36,9 @@ def create_post(title: str, description: str = "", category: str = "",
                 photo: UploadFile = File(None)):
     photo_path = None
     if photo:
-        photo_path = UPLOAD_DIR / photo.filename
+        safe_name = Path(photo.filename).name
+        unique_name = f"{uuid4().hex}_{safe_name}"
+        photo_path = UPLOAD_DIR / unique_name
         with photo_path.open("wb") as f:
             f.write(photo.file.read())
     conn = get_db()
@@ -50,7 +53,9 @@ def create_post(title: str, description: str = "", category: str = "",
 
 @app.get("/uploads/{filename}")
 def get_upload(filename: str):
-    file_path = UPLOAD_DIR / filename
-    if not file_path.exists():
+    requested = (UPLOAD_DIR / filename).resolve()
+    if UPLOAD_DIR.resolve() not in requested.parents:
+        raise HTTPException(status_code=400, detail="Invalid path")
+    if not requested.exists():
         raise HTTPException(status_code=404, detail="File not found")
-    return FileResponse(file_path)
+    return FileResponse(requested)
