@@ -27,12 +27,25 @@ def startup():
     conn = get_db()
     with open(Path(__file__).parent / "schema.sql") as f:
         conn.executescript(f.read())
+
+    # Migrate any stored photo paths to just filenames
+    rows = conn.execute("SELECT id, photo FROM posts WHERE photo IS NOT NULL").fetchall()
+    for row in rows:
+        filename = Path(row["photo"]).name
+        if filename != row["photo"]:
+            conn.execute("UPDATE posts SET photo = ? WHERE id = ?", (filename, row["id"]))
+    conn.commit()
     conn.close()
 
 @app.get("/posts")
 def list_posts():
     conn = get_db()
-    posts = [dict(row) for row in conn.execute("SELECT * FROM posts ORDER BY timestamp DESC")]
+    posts = []
+    for row in conn.execute("SELECT * FROM posts ORDER BY timestamp DESC"):
+        post = dict(row)
+        if post.get("photo"):
+            post["photo"] = str(UPLOAD_DIR / post["photo"])
+        posts.append(post)
     conn.close()
     return posts
 
@@ -40,20 +53,20 @@ def list_posts():
 def create_post(title: str, description: str = "", category: str = "",
                 latitude: float = 0.0, longitude: float = 0.0,
                 photo: UploadFile = File(None)):
-    photo_path = None
+    filename = None
     if photo:
         # Strip any path components from the uploaded filename
         filename = Path(photo.filename).name
         # Prefix the filename with a timestamp to avoid collisions
         timestamp = datetime.utcnow().strftime("%Y%m%d%H%M%S%f")
         filename = f"{timestamp}_{filename}"
-        photo_path = UPLOAD_DIR / filename
-        with photo_path.open("wb") as f:
+        file_path = UPLOAD_DIR / filename
+        with file_path.open("wb") as f:
             f.write(photo.file.read())
     conn = get_db()
     cursor = conn.execute(
         "INSERT INTO posts (title, description, category, latitude, longitude, photo) VALUES (?, ?, ?, ?, ?, ?)",
-        (title, description, category, latitude, longitude, str(photo_path) if photo_path else None)
+        (title, description, category, latitude, longitude, filename)
     )
     conn.commit()
     post_id = cursor.lastrowid
