@@ -2,6 +2,7 @@ from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.responses import FileResponse
 import sqlite3
 from pathlib import Path
+from uuid import uuid4
 
 DB_PATH = Path(__file__).parent / "db.sqlite3"
 UPLOAD_DIR = Path(__file__).parent / "uploads"
@@ -35,7 +36,11 @@ def create_post(title: str, description: str = "", category: str = "",
                 photo: UploadFile = File(None)):
     photo_path = None
     if photo:
-        photo_path = UPLOAD_DIR / photo.filename
+        # Sanitize filename and add a random prefix to avoid path
+        # traversal issues and collisions
+        filename = Path(photo.filename).name
+        randomized = f"{uuid4().hex}_{filename}"
+        photo_path = UPLOAD_DIR / randomized
         with photo_path.open("wb") as f:
             f.write(photo.file.read())
     conn = get_db()
