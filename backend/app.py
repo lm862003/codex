@@ -3,6 +3,7 @@ from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 import sqlite3
 from pathlib import Path
+from datetime import datetime
 
 DB_PATH = Path(__file__).parent / "db.sqlite3"
 UPLOAD_DIR = Path(__file__).parent / "uploads"
@@ -44,7 +45,12 @@ def create_post(title: str, description: str = "", category: str = "",
                 photo: UploadFile = File(None)):
     photo_path = None
     if photo:
-        photo_path = UPLOAD_DIR / photo.filename
+        # Strip any path components from the uploaded filename
+        filename = Path(photo.filename).name
+        # Prefix the filename with a timestamp to avoid collisions
+        timestamp = datetime.utcnow().strftime("%Y%m%d%H%M%S%f")
+        filename = f"{timestamp}_{filename}"
+        photo_path = UPLOAD_DIR / filename
         with photo_path.open("wb") as f:
             f.write(photo.file.read())
     conn = get_db()
