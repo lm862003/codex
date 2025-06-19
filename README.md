@@ -4,7 +4,7 @@ This repository contains a local-first prototype with a Python backend and a Rea
 
 ## Backend
 
-The backend uses FastAPI with a SQLite database. Posts and uploaded photos are stored locally.
+The backend uses FastAPI with a SQLite database. Posts and uploaded photos are stored locally. Uploaded filenames are sanitized and given a random prefix before saving to prevent collisions and unsafe paths.
 
 Run the backend:
 
