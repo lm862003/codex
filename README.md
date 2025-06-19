@@ -63,7 +63,8 @@ frontend/
 
 ## Running Tests
 
-Install the development dependencies and run `pytest`:
+Install the development dependencies and run `pytest`. The dev requirements
+include `httpx`, which is needed by FastAPI's `TestClient` used in the tests:
 
 ```bash
 python -m venv venv && source venv/bin/activate
