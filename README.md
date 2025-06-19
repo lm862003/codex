@@ -6,6 +6,10 @@ This repository contains a local-first prototype with a Python backend and a Rea
 
 The backend uses FastAPI with a SQLite database. Posts and uploaded photos are stored locally.
 
+### CSV Data
+
+Any CSV files used for prototyping or testing can be placed in `backend/data`. Two tiny sample files, `crime.csv` and `offenders.csv`, are provided in that directory.
+
 Run the backend:
 
 ```bash
