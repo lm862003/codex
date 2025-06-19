@@ -11,13 +11,10 @@ UPLOAD_DIR.mkdir(exist_ok=True)
 
 app = FastAPI(title="SpotMap Prototype")
 
-# Allow requests from the React dev server
-app.add_middleware(
-    CORSMiddleware,
+# Allow requests from the React dev server running on a different port
+app.add_middleware(CORSMiddleware,
     allow_origins=["http://localhost:5173"],
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+    allow_methods=["*"], allow_headers=["*"])
 
 
 def get_db():

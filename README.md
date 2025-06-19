@@ -16,7 +16,9 @@ python main.py
 
 The API will be available on `http://localhost:8000`.
 
-CORS is enabled for the development frontend at `http://localhost:5173`, so the React app can make requests to the API during local development.
+When the frontend is served from a different port, the backend needs CORS
+enabled so the browser allows cross-origin requests. `backend/app.py` adds
+`CORSMiddleware` for the dev server running on `http://localhost:5173`.
 
 ## Frontend
 
