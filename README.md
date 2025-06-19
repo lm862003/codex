@@ -16,6 +16,8 @@ python main.py
 
 The API will be available on `http://localhost:8000`.
 
+CORS is enabled for the development frontend at `http://localhost:5173`, so the React app can make requests to the API during local development.
+
 ## Frontend
 
 The frontend is a React app bootstrapped with Vite. Install dependencies and start the dev server:
