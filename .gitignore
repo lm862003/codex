@@ -4,5 +4,6 @@ frontend/node_modules/
 frontend/dist/
 backend/db.sqlite3
 
-backend/uploads/
+backend/uploads/*
+!backend/uploads/.gitkeep
 *.pyc
